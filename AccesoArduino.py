@@ -7,6 +7,7 @@ def enviarOrdenArduino(input):
         s.connect((HOST,PORT))
         input = input + '\r\n'
         s.sendall(bytes(input, 'ascii'))
+        print(repr(bytes(input, 'ascii')))
         data = s.recv(1024)
         data = repr(data)
         s.close()
