@@ -1,4 +1,5 @@
-from telegram.ext import Updater, CommandHandler
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
 version = "ArduinoPasarela"
 
@@ -13,30 +14,30 @@ class telegramBot:
     def __init__(self):
         print(auth.telegramUsers)
         self.updater = Updater(auth.telegram)
-        self.botito = self.updater.bot;
+        self.botito = self.updater.bot
 
-        def start(bot, update):
+        def start(update: Update, context : CallbackContext) -> None:
             chid = update.message.chat_id
             auth.addTelegramUser(chid)
-            bot.send_message(chat_id=chid, text="Hi, welcome to " + version)
+            update.message.reply_text("Hi, welcome to ", version)
 
-        def echoAll(bot, update):
+        def echoAll(update: Update, context : CallbackContext) -> None:
             self.broadcastMSG("" + update.message.from_user.first_name + " " +
                                                     update.message.from_user.last_name + " said hi")
 
-        def arduino(bot, update):
+        def arduino(update: Update, context : CallbackContext) -> None:
             AccesoArduino.enviarOrdenArduino(update.message.text)
             update.message.reply_text("Orden ",  update.message.text, " enviada")
 
-        def wol(bot, update):
+        def wol(update: Update, context : CallbackContext) -> None:
             import subprocess
             try:
                 subprocess.call("./wol.sh", shell=True)
-                bot.send_message(chat_id=update.message.chat_id, text="Wol successfully initiated")
+                self.updater.bot.send_message(chat_id=update.message.chat_id, text="Wol successfully initiated")
             except:
                 #shuould never enter here
                 import sys
-                bot.send_message(chat_id=update.message.chat_id, text="Wol failed" + sys.exc_info()[0])
+                self.updater.bot.send_message(chat_id=update.message.chat_id, text="Wol failed" + sys.exc_info()[0])
 
         dispatcher = self.updater.dispatcher
         start_handler = CommandHandler('start', start)
