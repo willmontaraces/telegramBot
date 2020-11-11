@@ -26,8 +26,14 @@ class telegramBot:
                                                     update.message.from_user.last_name + " said hi")
 
         def arduino(update: Update, context : CallbackContext) -> None:
-            respuesta = AccesoArduino.enviarOrdenArduino(update.message.text.split[1])
-            update.message.reply_text("Orden " +  update.message.text + " enviada \n" + respuesta)
+            paraEnviarArduino = update.message.text
+            paraEnviarArduino = paraEnviarArduino.split(" ")
+            if len(paraEnviarArduino) > 1:
+                paraEnviarArduino = paraEnviarArduino[1]
+                respuesta = AccesoArduino.enviarOrdenArduino(paraEnviarArduino)
+                update.message.reply_text("Orden " +  update.message.text + " enviada \n" + respuesta)
+            else:
+                update.message.reply_text("Orden invalida")
 
         def wol(update: Update, context : CallbackContext) -> None:
             import subprocess
