@@ -19,7 +19,7 @@ class telegramBot:
         def start(update: Update, context : CallbackContext) -> None:
             chid = update.message.chat_id
             auth.addTelegramUser(chid)
-            update.message.reply_text("Hi, welcome to ", version)
+            update.message.reply_text("Hi, welcome to " + version)
 
         def echoAll(update: Update, context : CallbackContext) -> None:
             self.broadcastMSG("" + update.message.from_user.first_name + " " +
@@ -27,7 +27,7 @@ class telegramBot:
 
         def arduino(update: Update, context : CallbackContext) -> None:
             AccesoArduino.enviarOrdenArduino(update.message.text)
-            update.message.reply_text("Orden ",  update.message.text, " enviada")
+            update.message.reply_text("Orden " +  update.message.text + " enviada")
 
         def wol(update: Update, context : CallbackContext) -> None:
             import subprocess
