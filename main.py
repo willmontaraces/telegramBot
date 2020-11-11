@@ -1,53 +1,15 @@
 from telegram.ext import Updater, CommandHandler
-import tweepy
 
-version = "Twitter piper v0.2"
+version = "ArduinoPasarela"
 
 import DataStoringModule
+import AccesoArduino
 
 auth = DataStoringModule.Auth();
 auth.process()
 
 
-
-def handleTweet(text):
-    if text.startswith("RT") or text.startswith("@"):
-        return False
-    botTe.broadcastMSG(text)
-
-
-class twitterBot:
-
-    def __init__(self):
-
-        class MyStreamListener(tweepy.StreamListener):
-            def on_status(self, status):
-                print(status.text)
-                handleTweet(status.text)
-
-            def on_error(self, status_code):
-                if status_code == 420:
-                    return False
-                else:
-                    print(status_code)
-
-            def on_exception(self, exception):
-                print(exception)
-                from threading import Timer
-                Timer(30.0, twitterBot).start()
-
-        twitterAuth = tweepy.OAuthHandler(auth.twitterAPIKey, auth.twitterAPISecretKey)
-        twitterAuth.set_access_token(auth.twitterAccessToken, auth.twitterAccessTokenSecret)
-
-        api = tweepy.API(twitterAuth)
-        myStreamListener = MyStreamListener()
-        self.myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
-        print(auth.twitterFollows)
-        self.myStream.filter(follow=auth.twitterFollows, is_async=True)
-
-
 class telegramBot:
-
     def __init__(self):
         print(auth.telegramUsers)
         self.updater = Updater(auth.telegram)
@@ -61,6 +23,10 @@ class telegramBot:
         def echoAll(bot, update):
             self.broadcastMSG("" + update.message.from_user.first_name + " " +
                                                     update.message.from_user.last_name + " said hi")
+
+        def arduino(bot, update):
+            AccesoArduino.enviarOrdenArduino(update.message.text)
+            update.message.reply_text("Orden ",  update.message.text, " enviada")
 
         def wol(bot, update):
             import subprocess
@@ -82,6 +48,9 @@ class telegramBot:
         wol_handler = CommandHandler('wol', wol)
         dispatcher.add_handler(wol_handler)
 
+        arduino_handler = CommandHandler('arduino', arduino)
+        dispatcher.add_handler(arduino_handler)
+
         self.updater.start_polling()
 
     def broadcastMSG(self, msg):
@@ -90,18 +59,6 @@ class telegramBot:
 
 
 botTe = telegramBot()
-
-
-auth.deleteFollow("32771325")
-# follow number twitter for debugging purposes
-# auth.addFollow("32771325")
-
-# follow liinex
-auth.addFollow("305539696")
-# follow forocoches admin
-auth.addFollow("39278447")
-
-botTw = twitterBot()
 
 
 
