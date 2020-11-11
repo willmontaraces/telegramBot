@@ -26,7 +26,7 @@ class telegramBot:
                                                     update.message.from_user.last_name + " said hi")
 
         def arduino(update: Update, context : CallbackContext) -> None:
-            respuesta = AccesoArduino.enviarOrdenArduino(update.message.text)
+            respuesta = AccesoArduino.enviarOrdenArduino(update.message.text.split[1])
             update.message.reply_text("Orden " +  update.message.text + " enviada \n" + respuesta)
 
         def wol(update: Update, context : CallbackContext) -> None:
