@@ -5,5 +5,6 @@ PORT = 80
 def enviarOrdenArduino(input):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST,PORT))
-        s.sendall(input)
+        input = input + '\r\n'
+        s.sendall(bytes(input, 'ascii'))
         s.close()
