@@ -27,10 +27,14 @@ def disconnect():
 
 def sendMsg(message):
     sock.send(message)
-    response = sock.recv(1024)
+    response = ""
+    rawResponse = sock.recv(1024)
+    while rawResponse:
+        response += rawResponse
+        rawResponse = sock.recv(1024)
     if not response:
         return "Error"
     else:
-        return response
+        return repr(response)
 
 
