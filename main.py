@@ -2,19 +2,32 @@ from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
 version = "ArduinoPasarela"
+btName = "WoLBT"
 
 import DataStoringModule
 import AccesoArduino
+import bt
 
 auth = DataStoringModule.Auth();
 auth.process()
 
+def stripHeader(input):
+    output = input.split(" ")
+    if len(output) > 1:
+        output = output[1:]
+    else:
+        output = ""
+    return output
 
 class telegramBot:
     def __init__(self):
         print(auth.telegramUsers)
         self.updater = Updater(auth.telegram)
         self.botito = self.updater.bot
+        try:
+            bt.connect(btName)
+        except:
+            print("Could not connect to BT")
 
         def start(update: Update, context : CallbackContext) -> None:
             chid = update.message.chat_id
@@ -26,24 +39,13 @@ class telegramBot:
                                                     update.message.from_user.last_name + " said hi")
 
         def arduino(update: Update, context : CallbackContext) -> None:
-            paraEnviarArduino = update.message.text
-            paraEnviarArduino = paraEnviarArduino.split(" ")
-            if len(paraEnviarArduino) > 1:
-                paraEnviarArduino = paraEnviarArduino[1]
-                respuesta = AccesoArduino.enviarOrdenArduino(paraEnviarArduino)
-                update.message.reply_text("Orden " +  update.message.text + " enviada \n" + respuesta)
-            else:
-                update.message.reply_text("Orden invalida")
+            mensaje = update.message.text
+            respuesta = AccesoArduino.enviarOrdenArduino(stripHeader(mensaje))
+            update.message.reply_text("Orden " + update.message.text + " enviada \n" + respuesta)
 
         def wol(update: Update, context : CallbackContext) -> None:
-            import subprocess
-            try:
-                subprocess.call("./wol.sh", shell=True)
-                self.updater.bot.send_message(chat_id=update.message.chat_id, text="Wol successfully initiated")
-            except:
-                #shuould never enter here
-                import sys
-                self.updater.bot.send_message(chat_id=update.message.chat_id, text="Wol failed" + sys.exc_info()[0])
+            respuesta = bt.sendMsg("WOL")
+            update.message.reply_text(respuesta)
 
         dispatcher = self.updater.dispatcher
         start_handler = CommandHandler('start', start)
