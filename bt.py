@@ -7,9 +7,9 @@ target_address=None
 
 nearby_devices = bluetooth.discover_devices(lookup_names=True)
 
-for bt in nearby_devices:
-    if target_name == bt.name:
-        target_address = bt.address
+for address, name in nearby_devices:
+    if target_name == name:
+        target_address = address
         break
 
 if target_address is not None:
@@ -17,8 +17,8 @@ if target_address is not None:
 else:
     print("could not find target bluetooth device nearby")
 
-sock = bluetooth.BluetoothSocket(bluetooth.L2CAP)
-sock.connect((target_address, 0x1001))
+sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+sock.connect((target_address, 0x0001))
 
 while True:
     data = input()
