@@ -44,7 +44,7 @@ class telegramBot:
             update.message.reply_text("Orden " + update.message.text + " enviada \n" + respuesta)
 
         def wol(update: Update, context : CallbackContext) -> None:
-            respuesta = bt.sendMsg("WOL")
+            respuesta = bt.sendMsg("W")
             update.message.reply_text(respuesta)
 
         dispatcher = self.updater.dispatcher
