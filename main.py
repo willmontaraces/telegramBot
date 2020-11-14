@@ -44,8 +44,12 @@ class telegramBot:
             update.message.reply_text("Orden " + update.message.text + " enviada \n" + respuesta)
 
         def wol(update: Update, context : CallbackContext) -> None:
-            respuesta = bt.sendMsg("W")
-            update.message.reply_text(respuesta)
+            respuestaBT = bt.sendMsg("W")
+            if(respuestaBT == "O"):
+                respuestaTelegram = "Done"
+            else:
+                respuestaTelegram = "Error"
+            update.message.reply_text(respuestaTelegram)
 
         dispatcher = self.updater.dispatcher
         start_handler = CommandHandler('start', start)
