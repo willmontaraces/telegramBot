@@ -63,8 +63,8 @@ class telegramBot:
 
         self.updater.start_polling()
 
-http_server.run()
 botTe = telegramBot()
+http_server.run()
 
 
 
