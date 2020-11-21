@@ -7,8 +7,9 @@ btName = "WoLBT"
 import DataStoringModule
 import AccesoArduino
 import bt
+import http_server
 
-auth = DataStoringModule.Auth();
+auth = DataStoringModule.Auth()
 auth.process()
 
 def stripHeader(input):
@@ -29,20 +30,19 @@ class telegramBot:
         except:
             print("Could not connect to BT")
 
+        #authentication needed to start interfacing with the ESP
         def start(update: Update, context : CallbackContext) -> None:
             chid = update.message.chat_id
             auth.addTelegramUser(chid)
             update.message.reply_text("Hi, welcome to " + version)
 
-        def echoAll(update: Update, context : CallbackContext) -> None:
-            self.broadcastMSG("" + update.message.from_user.first_name + " " +
-                                                    update.message.from_user.last_name + " said hi")
-
+        #If connected to wifi to an arduino will send the attached command to the ESP by wifi
         def arduino(update: Update, context : CallbackContext) -> None:
             mensaje = update.message.text
             respuesta = AccesoArduino.enviarOrdenArduino(stripHeader(mensaje))
             update.message.reply_text("Orden " + update.message.text + " enviada \n" + respuesta)
 
+        #Will trigger the relay as a button
         def wol(update: Update, context : CallbackContext) -> None:
             respuestaBT = bt.sendMsg("W")
             if(respuestaBT == "O"):
@@ -55,9 +55,6 @@ class telegramBot:
         start_handler = CommandHandler('start', start)
         dispatcher.add_handler(start_handler)
 
-        echoAll_handler = CommandHandler('echoAll', echoAll)
-        dispatcher.add_handler(echoAll_handler)
-
         wol_handler = CommandHandler('wol', wol)
         dispatcher.add_handler(wol_handler)
 
@@ -66,11 +63,7 @@ class telegramBot:
 
         self.updater.start_polling()
 
-    def broadcastMSG(self, msg):
-        for temp in auth.telegramUsers:
-            self.botito.send_message(chat_id=temp, text=msg)
-
-
+http_server.run()
 botTe = telegramBot()
 
 

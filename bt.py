@@ -4,6 +4,8 @@ import bluetooth
 
 sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 
+#Currently only works once, if connection is dropped bt module stops working
+#TODO fix persistence
 def connect(target_name):
 #    target_name = "WoLBT"
     target_address=None
@@ -22,9 +24,12 @@ def connect(target_name):
 
     sock.connect((target_address, 0x0001))
 
+#Currently not working, so no fault tolerance
 def disconnect():
     sock.close()
 
+#Sends msg to the bt slave, this message should be one character long
+#The response will also be one character long
 def sendMsg(message):
     sock.send(message)
     rawResponse = sock.recv(1024)
