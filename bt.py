@@ -32,6 +32,6 @@ def sendMsg(message):
     if not rawResponse:
         return "Error"
     else:
-        return repr(bytes(rawResponse, 'ascii'))
+        return repr(rawResponse)[2:-1]
 
 
